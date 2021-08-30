@@ -27,4 +27,8 @@ public class User {
     @Column(name = "user_name", nullable = false)
     @NonNull
     String userName;
+
+    @Column(name = "is_active", nullable = false)
+    @NonNull
+    Boolean isActive;
 }
