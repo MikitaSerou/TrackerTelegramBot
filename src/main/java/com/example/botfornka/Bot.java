@@ -1,6 +1,8 @@
 package com.example.botfornka;
 
 import com.example.botfornka.config.BotConfig;
+import com.example.botfornka.service.MessageService;
+import com.example.botfornka.service.UserService;
 import com.example.botfornka.util.URLSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,15 @@ public class Bot extends TelegramLongPollingBot {
 
     private final BotConfig config;
     private final URLSender urlSender;
+    private final UserService userService;
+    private final MessageService messageService;
 
     @Autowired
-    public Bot(BotConfig config, URLSender urlSender) {
+    public Bot(BotConfig config, URLSender urlSender, UserService userService, MessageService messageService) {
         this.config = config;
         this.urlSender = urlSender;
+        this.userService = userService;
+        this.messageService = messageService;
     }
 
     public void onUpdateReceived(Update update) {
@@ -30,6 +36,8 @@ public class Bot extends TelegramLongPollingBot {
         String chatId;
 
         if (update.getMessage() != null) {
+            userService.saveUserIfNotExistFromMessageInfo(update.getMessage());
+
             chatId = update.getMessage().getChatId().toString();
             update.getMessage().getAuthorSignature();
             builder.chatId(chatId);
@@ -40,7 +48,7 @@ public class Bot extends TelegramLongPollingBot {
             messageText = update.getChannelPost().getText();
         }
 
-        if(messageText.contains("/hello")){
+        if (messageText.contains("/hello")) {
             builder.text(urlSender.getRequestInfoByURL("https://www.nbrb.by/api/exrates/rates/840?parammode=1"));
             //builder.text("Hello");
             try {

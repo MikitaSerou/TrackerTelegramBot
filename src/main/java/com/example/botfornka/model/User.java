@@ -2,7 +2,6 @@ package com.example.botfornka.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
 
@@ -10,7 +9,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode(exclude = {"id"})
@@ -21,9 +20,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "chat_id")
+    @Column(name = "chat_id", unique = true)
+    @NonNull
     Long chatId;
 
     @Column(name = "user_name", nullable = false)
+    @NonNull
     String userName;
 }

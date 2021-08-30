@@ -15,11 +15,15 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Slf4j
 public class BotInitializer {
 
+    private final Bot bot;
+
     @Autowired
-    private Bot bot;
+    public BotInitializer(Bot bot) {
+        this.bot = bot;
+    }
 
     @EventListener({ContextRefreshedEvent.class})
-    public void init() throws TelegramApiException{
+    public void init() throws TelegramApiException {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
             telegramBotsApi.registerBot(bot);
@@ -27,5 +31,4 @@ public class BotInitializer {
             log.error(e.getLocalizedMessage());
         }
     }
-
 }
