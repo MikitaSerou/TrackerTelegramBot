@@ -2,8 +2,8 @@ package com.example.botfornka;
 
 import com.example.botfornka.config.BotConfig;
 import com.example.botfornka.service.MessageService;
+import com.example.botfornka.service.RestService;
 import com.example.botfornka.service.UserService;
-import com.example.botfornka.util.URLSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,16 +17,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class Bot extends TelegramLongPollingBot {
 
     private final BotConfig config;
-    private final URLSender urlSender;
-    private final UserService userService;
-    private final MessageService messageService;
+    private final RestService restService;
+    private final UserService userServiceImpl;
+    private final MessageService messageServiceImpl;
 
     @Autowired
-    public Bot(BotConfig config, URLSender urlSender, UserService userService, MessageService messageService) {
+    public Bot(BotConfig config, RestService urlSender, UserService userServiceImpl, MessageService messageServiceImpl) {
         this.config = config;
-        this.urlSender = urlSender;
-        this.userService = userService;
-        this.messageService = messageService;
+        this.restService = urlSender;
+        this.userServiceImpl = userServiceImpl;
+        this.messageServiceImpl = messageServiceImpl;
     }
 
     public void onUpdateReceived(Update update) {
@@ -36,7 +36,7 @@ public class Bot extends TelegramLongPollingBot {
         String chatId;
 
         if (update.getMessage() != null) {
-            userService.saveUserIfNotExistFromMessageInfo(update.getMessage());
+            userServiceImpl.saveUserIfNotExistFromMessageInfo(update.getMessage());
 
             chatId = update.getMessage().getChatId().toString();
             update.getMessage().getAuthorSignature();
@@ -49,8 +49,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
         if (messageText.contains("/hello")) {
-            builder.text(urlSender.getRequestInfoByURL("https://www.nbrb.by/api/exrates/rates/840?parammode=1"));
-            //builder.text("Hello");
+            builder.text(restService.receiveGetResponseSummaryByUrl("https://www.nbrb.by/api/exrates/rates/840?parammode=1"));
             try {
                 execute(builder.build());
             } catch (TelegramApiException e) {
