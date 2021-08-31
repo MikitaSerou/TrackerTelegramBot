@@ -1,6 +1,5 @@
 package com.example.botfornka.service;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public interface RestService {
@@ -9,7 +8,5 @@ public interface RestService {
 
     String receiveGetResponseSummaryByUrl(String url);
 
-    HttpStatus getStatusCode(ResponseEntity<String> response);
-
-    String getBodyAsString(ResponseEntity<String> response);
+    String receiveDefaultResponseSummary();
 }

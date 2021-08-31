@@ -30,6 +30,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void startUserSubscription(Message message) {
+        saveUserIfNotExistFromMessageInfo(message);
+        setUserSubscriptionStatus(getUserByChatId(message.getChatId()), true);
+    }
+
+    @Override
     public void saveUserIfNotExistFromMessageInfo(Message message) {
         if (!isExistByChatId(message.getChatId())) {
             saveUser(generateUserFromMessage(message));

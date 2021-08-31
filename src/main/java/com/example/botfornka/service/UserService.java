@@ -16,4 +16,6 @@ public interface UserService {
     void setUserSubscriptionStatus(User user, Boolean isSubscribe);
 
     Boolean getUserSubscriptionStatus(User user);
+
+    void startUserSubscription(Message message);
 }

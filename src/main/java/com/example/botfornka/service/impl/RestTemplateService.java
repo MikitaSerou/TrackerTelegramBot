@@ -1,16 +1,20 @@
 package com.example.botfornka.service.impl;
 
 import com.example.botfornka.service.RestService;
+import com.example.botfornka.util.RowsFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class RestTemplateService implements RestService {
+
+    @Value("${tracked.url}")
+    private String TRACKED_DEFAULT_URL;
 
     private final RestTemplate restTemplate;
 
@@ -25,23 +29,13 @@ public class RestTemplateService implements RestService {
     }
 
     @Override
+    public String receiveDefaultResponseSummary() {
+        return receiveGetResponseSummaryByUrl(TRACKED_DEFAULT_URL);
+    }
+
+    @Override
     public String receiveGetResponseSummaryByUrl(String url) {
         ResponseEntity<String> response = doGetRequestByURL(url);
-        return "Status: " + getStatusCode(response) +
-                "\nBody: \n" + getBodyAsString(response);
-    }
-
-    @Override
-    public HttpStatus getStatusCode(ResponseEntity<String> response) {
-        return response.getStatusCode();
-    }
-
-    @Override
-    public String getBodyAsString(ResponseEntity<String> response) {
-        String responseBody = response.getBody();
-        if (responseBody != null && !responseBody.isBlank()) {
-            return response.getBody();
-        }
-        return "Response body is missing";
+        return RowsFormatter.getResponseSummary(response);
     }
 }
