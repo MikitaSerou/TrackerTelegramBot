@@ -39,39 +39,33 @@ public class AnswerServiceImpl implements AnswerService {
             case PING -> doPingAnswer(message.getChatId());
             case STATUS -> doCurrentStatusAnswer(message.getChatId());
         };
-
     }
 
     @Override
     public SendMessage doStartTrackingAnswer(Message message) {
         userService.startUserSubscription(message);
-        SendMessage.SendMessageBuilder builder = SendMessage.builder();
-        return builder.text(EmojiParser.parseToUnicode(":bulb: You started tracking server state"))
-                .chatId(String.valueOf(message.getChatId())).build();
+        return buildMessage(message.getChatId(),
+                EmojiParser.parseToUnicode(":bulb: You started tracking server state"));
     }
 
     @Override
     public SendMessage doStopTrackingAnswer(Long chatId) {
         userService.setUserSubscriptionStatus(userService.getUserByChatId(chatId), false);
-        SendMessage.SendMessageBuilder builder = SendMessage.builder();
-        return builder.text(EmojiParser.parseToUnicode(":stop_sign: Tracking is stopped"))
-                .chatId(String.valueOf(chatId)).build();
+        return buildMessage(chatId, EmojiParser.parseToUnicode(":stop_sign: Tracking is stopped"));
     }
 
     @Override
     public SendMessage doPingAnswer(Long chatId) {
-        SendMessage.SendMessageBuilder builder = SendMessage.builder();
-        builder.text(restService.receiveDefaultResponseSummary()).chatId(String.valueOf(chatId));
-        return builder.build();
+        return buildMessage(chatId, restService.receiveDefaultResponseSummary());
     }
 
     @Override
     public SendMessage doCurrentStatusAnswer(Long chatId) {
-        SendMessage.SendMessageBuilder builder = SendMessage.builder();
-        User currentUser = userService.getUserByChatId(chatId);
-        builder.text(getTextAccordingToStatus(userService.getUserSubscriptionStatus(currentUser)))
-                .chatId(String.valueOf(chatId));
-        return builder.build();
+        if (userService.isExistByChatId(chatId)) {
+            User currentUser = userService.getUserByChatId(chatId);
+            return buildMessage(chatId, getTextAccordingToStatus(userService.getUserSubscriptionStatus(currentUser)));
+        }
+        return buildMessage(chatId, getTextAccordingToStatus(false));
     }
 
     private String getTextAccordingToStatus(Boolean status) {
@@ -81,8 +75,12 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public SendMessage getWrongCommandMessage(Long chatId) {
+        return buildMessage(chatId,
+                EmojiParser.parseToUnicode(":warning: Not allowed command. Please try again with one from list."));
+    }
+
+    private SendMessage buildMessage(Long chatId, String text) {
         SendMessage.SendMessageBuilder builder = SendMessage.builder();
-        builder.text("Not allowed command. Please try again with one from list.").chatId(String.valueOf(chatId));
-        return builder.build();
+        return builder.text(text).chatId(String.valueOf(chatId)).build();
     }
 }
