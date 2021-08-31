@@ -28,8 +28,7 @@ public class RestTemplateService implements RestService {
     public String receiveGetResponseSummaryByUrl(String url) {
         ResponseEntity<String> response = doGetRequestByURL(url);
         return "Status: " + getStatusCode(response) +
-                "\nBody: \n" +
-                getBodyAsString(response);
+                "\nBody: \n" + getBodyAsString(response);
     }
 
     @Override

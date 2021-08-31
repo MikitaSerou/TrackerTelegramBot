@@ -25,6 +25,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByChatId(Long chatId) {
+        return userRepository.findByChatId(chatId);
+    }
+
+    @Override
     public void saveUserIfNotExistFromMessageInfo(Message message) {
         if (!isExistByChatId(message.getChatId())) {
             saveUser(generateUserFromMessage(message));
@@ -38,5 +43,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isExistByChatId(Long chatId) {
         return userRepository.findByChatId(chatId) != null;
+    }
+
+    @Override
+    public void setUserSubscriptionStatus(User user, Boolean isSubscribe) {
+        user.setIsActive(isSubscribe);
+        userRepository.save(user);
+    }
+
+    @Override
+    public Boolean getUserSubscriptionStatus(User user) {
+        return userRepository.getUserStatus(user.getChatId());
     }
 }

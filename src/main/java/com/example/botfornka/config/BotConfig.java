@@ -1,17 +1,19 @@
 package com.example.botfornka.config;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BotConfig {
 
-    @Value("${botUserName}")
-    private String botUserName;
+    @Value("${bot.name}")
+    String BOT_NAME;
 
     @Value("${token}")
-    private String token;
-
+    String TOKEN;
 }
