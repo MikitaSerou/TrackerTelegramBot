@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity;
 
 public class RowsFormatter {
 
-    public static String getResponseSummary(ResponseEntity<String> response) {
-        return "STATUS: " + generateStatusRow(response.getStatusCode()) + "\n" +
-                "\nHEADERS:\n" + response.getHeaders() +
-                "\n\nBODY:\n" + response.getBody();
+    public static String getResponseSummary(ResponseEntity<String> response, String url) {
+        return "URL: " + url
+                + "\n" + "STATUS: " + generateStatusRow(response.getStatusCode());
+        //  + "\n" + "\nHEADERS:\n" + response.getHeaders();
+        // + "\n\nBODY:\n" + response.getBody(); //TODO иногда тело слишком большое для сообщения TG
     }
 
     private static String generateStatusRow(HttpStatus status) {

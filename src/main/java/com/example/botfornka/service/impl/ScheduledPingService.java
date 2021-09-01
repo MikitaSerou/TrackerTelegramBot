@@ -1,5 +1,6 @@
 package com.example.botfornka.service.impl;
 
+import com.example.botfornka.service.MailingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,20 +19,20 @@ public class ScheduledPingService {
 
     private Boolean isActiveTask = true;
 
-    private final RestTemplateService restTemplateService;
+    private final RestServiceImpl restServiceImpl;
 
     private final MailingService mailingService;
 
     @Autowired
-    public ScheduledPingService(RestTemplateService restTemplateService, MailingService mailingService) {
-        this.restTemplateService = restTemplateService;
+    public ScheduledPingService(RestServiceImpl restServiceImpl, MailingServiceImpl mailingService) {
+        this.restServiceImpl = restServiceImpl;
         this.mailingService = mailingService;
     }
 
     @Scheduled(fixedRateString = "${fixedRate.tracking.milliseconds}")
     public void trackCurrentServerState() {
         try {
-            throwExceptionIfServerError(restTemplateService.doGetRequestByURL(URL));
+            throwExceptionIfServerError(restServiceImpl.doGetRequestByURL(URL));
             notifyAboutRestored();
         } catch (ResourceAccessException | HttpServerErrorException exception) {
             log.error("CAN NOT GET RESPONSE FROM " + URL);

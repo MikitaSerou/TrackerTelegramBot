@@ -14,7 +14,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class RestTemplateService implements RestService {
+public class RestServiceImpl implements RestService {
 
     @Value("${tracked.url}")
     private String TRACKED_DEFAULT_URL;
@@ -22,7 +22,7 @@ public class RestTemplateService implements RestService {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public RestTemplateService(RestTemplateBuilder restTemplateBuilder) {
+    public RestServiceImpl(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
@@ -43,6 +43,6 @@ public class RestTemplateService implements RestService {
     @Override
     public String receiveGetResponseSummaryByUrl(String url) {
         ResponseEntity<String> response = doGetRequestByURL(url);
-        return RowsFormatter.getResponseSummary(response);
+        return RowsFormatter.getResponseSummary(response, url);
     }
 }
