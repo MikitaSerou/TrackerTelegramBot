@@ -2,6 +2,7 @@ package com.example.botfornka.service.impl;
 
 import com.example.botfornka.service.RestService;
 import com.example.botfornka.util.RowsFormatter;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 public class RestServiceImpl implements RestService {
 
     @Value("${tracked.url}")
+    @Getter
     private String TRACKED_DEFAULT_URL;
 
     private final RestTemplate restTemplate;

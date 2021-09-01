@@ -9,4 +9,6 @@ public interface RestService {
     String receiveGetResponseSummaryByUrl(String url);
 
     String receiveDefaultResponseSummary();
+
+    String getTRACKED_DEFAULT_URL();
 }
