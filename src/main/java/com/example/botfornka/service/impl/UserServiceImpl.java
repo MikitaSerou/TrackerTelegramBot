@@ -45,7 +45,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private User generateUserFromMessage(Message message) {
-        return new User(message.getChatId(), message.getChat().getUserName(), true);
+        return message.getChat().getUserName() != null ?
+                new User(message.getChatId(), message.getChat().getUserName(), true) :
+                new User(message.getChatId(), true);
     }
 
     @Override

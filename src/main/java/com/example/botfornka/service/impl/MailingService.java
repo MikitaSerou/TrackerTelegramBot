@@ -29,7 +29,7 @@ public class MailingService {
         log.info("---------Start mailing restored connection message---------");
         List<User> activeUsers = userService.findAllByStatus(true);
         for (User user : activeUsers) {
-            log.info("Send message for user " + user.getUserName());
+            log.info("Send message for user " + user.getChatId());
             bot.onUpdateReceived(generateMailingUpdate(user, "restore"));
         }
     }
@@ -38,7 +38,7 @@ public class MailingService {
         log.info("---------Start mailing lost connection message---------");
         List<User> activeUsers = userService.findAllByStatus(true);
         for (User user : activeUsers) {
-            log.info("Send message for user " + user.getUserName());
+            log.info("Send message for user " + user.getChatId());
             bot.onUpdateReceived(generateMailingUpdate(user, "lost"));
         }
     }

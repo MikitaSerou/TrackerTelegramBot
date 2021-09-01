@@ -24,11 +24,16 @@ public class User {
     @NonNull
     Long chatId;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name")
     @NonNull
     String userName;
 
     @Column(name = "is_active", nullable = false)
     @NonNull
     Boolean isActive;
+
+    public User(@NonNull Long chatId, @NonNull Boolean isActive) {
+        this.chatId = chatId;
+        this.isActive = isActive;
+    }
 }
