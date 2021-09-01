@@ -2,8 +2,11 @@ package com.example.botfornka.service;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 public interface AnswerService {
+
+    SendMessage doAnswerForUser(Update update);
 
     SendMessage getMessageAndDoAnswer(Message message);
 

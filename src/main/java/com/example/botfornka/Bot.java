@@ -15,25 +15,25 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class Bot extends TelegramLongPollingBot {
 
     private final BotConfig config;
-    private final AnswerService messageServiceImpl;
+    private final AnswerService answerService;
 
     @Autowired
-    public Bot(BotConfig config, AnswerService messageServiceImpl) {
+    public Bot(BotConfig config, AnswerService answerService) {
         this.config = config;
-        this.messageServiceImpl = messageServiceImpl;
+        this.answerService = answerService;
     }
 
     public void onUpdateReceived(Update update) {
-        SendMessage sendMessage;
         if (update.getMessage() != null) {
-            if (update.getMessage().getAuthorSignature() != null && update.getMessage().getAuthorSignature().equals("ThisBot")) {
-                sendMessage = messageServiceImpl.doMailingAnswer(update.getMessage());
-                executeMessageSending(sendMessage);
-            } else {
-                sendMessage = messageServiceImpl.getMessageAndDoAnswer(update.getMessage());
-                sendMessage.setChatId(update.getMessage().getChatId().toString());
-                executeMessageSending(sendMessage);
-            }
+            executeMessageSending(getDefinedUpdate(update));
+        }
+    }
+
+    private SendMessage getDefinedUpdate(Update update) {
+        if (update.getMessage().getAuthorSignature() != null && update.getMessage().getAuthorSignature().equals("ThisBot")) {
+            return answerService.doMailingAnswer(update.getMessage());
+        } else {
+            return answerService.doAnswerForUser(update);
         }
     }
 

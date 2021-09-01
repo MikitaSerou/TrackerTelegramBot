@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
@@ -22,6 +23,17 @@ public class AnswerServiceImpl implements AnswerService {
     public AnswerServiceImpl(UserService userService, RestService restService) {
         this.userService = userService;
         this.restService = restService;
+    }
+
+
+    public SendMessage doMailingFromBot(Update update) {
+        return doMailingAnswer(update.getMessage());
+    }
+
+    public SendMessage doAnswerForUser(Update update) {
+        SendMessage sendMessage = getMessageAndDoAnswer(update.getMessage());
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
+        return sendMessage;
     }
 
     @Override
