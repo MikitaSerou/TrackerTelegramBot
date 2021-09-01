@@ -8,19 +8,20 @@ public class RowsFormatter {
 
 
     public static String getResponseSummary(ResponseEntity<String> response) {
-        return "Status: " + generateStatusRow(response.getStatusCode()) + "\n" +
-                "Response body: \n\n" + response.getBody();
+        return "STATUS: " + generateStatusRow(response.getStatusCode()) + "\n" +
+                "\nHEADERS:\n" + response.getHeaders() +
+                "\n\nBODY:\n" + response.getBody();
     }
 
     private static String generateStatusRow(HttpStatus status) {
         return status.is2xxSuccessful() ?
-                EmojiParser.parseToUnicode(":white_check_mark:" + status) :
+                EmojiParser.parseToUnicode(status + ":white_check_mark:") :
                 generateIrregularStatusRows(status);
     }
 
     private static String generateIrregularStatusRows(HttpStatus status) {
         return (status.is5xxServerError() || status.is4xxClientError()) ?
-                EmojiParser.parseToUnicode(":x:" + status) :
-                EmojiParser.parseToUnicode(":sunny:" + status);
+                EmojiParser.parseToUnicode(status + ":x:") :
+                EmojiParser.parseToUnicode(status + ":sunny:");
     }
 }

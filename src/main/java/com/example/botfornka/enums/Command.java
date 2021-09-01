@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -22,13 +20,9 @@ public enum Command {
         this.text = commandMessage;
     }
 
-    public static List<String> getAllCommandsMessageText() {
-        return Arrays.stream(values()).map(Command::getText).collect(Collectors.toList());
-    }
-
-    public static Command getByText(String text) throws Exception {
+    public static Command getByText(String text) throws IllegalArgumentException {
         return Arrays.stream(Command.values()).filter(v ->
                 v.getText().equals(text)).findFirst().orElseThrow(() ->
-                new Exception(String.format("Unknown Command text: '%s'", text)));
+                new IllegalArgumentException(String.format("Unknown Command text: '%s'", text)));
     }
 }

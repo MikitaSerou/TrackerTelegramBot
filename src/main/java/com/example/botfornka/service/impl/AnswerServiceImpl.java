@@ -8,6 +8,7 @@ import com.example.botfornka.service.UserService;
 import com.vdurmont.emoji.EmojiParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -23,21 +24,36 @@ public class AnswerServiceImpl implements AnswerService {
         this.restService = restService;
     }
 
-    public SendMessage GetMessageAndDoAnswerByReceivedText(Message message) {
+    public SendMessage getMessageAndDoAnswer(Message message) {
         try {
             return chooseAnswerByCommand(message, Command.getByText(message.getText()));
-        } catch (Exception e) {
+        } catch (Exception exception) {
+            return getHandledExceptionAnswer(exception, message);
+        }
+    }
+
+    private SendMessage getHandledExceptionAnswer(Exception exception, Message message) {
+        if (IllegalArgumentException.class.equals(exception.getClass())) {
             return getWrongCommandMessage(message.getChatId());
+        } else if (ResourceAccessException.class.equals(exception.getClass())) {
+            return getServerNotAllowedMessage(message.getChatId(), exception);
+        } else {
+            return doUnknownErrorAnswer(message.getChatId());
         }
     }
 
     @Override
-    public SendMessage chooseAnswerByCommand(Message message, Command command) {
+    public SendMessage doUnknownErrorAnswer(Long chatId) {
+        return buildMessage(chatId,
+                EmojiParser.parseToUnicode("Unknown error"));
+    }
+
+    private SendMessage chooseAnswerByCommand(Message message, Command command) {
         return switch (command) {
             case START -> doStartTrackingAnswer(message);
             case STOP -> doStopTrackingAnswer(message.getChatId());
             case PING -> doPingAnswer(message.getChatId());
-            case STATUS -> doCurrentStatusAnswer(message.getChatId());
+            case STATUS -> doTrackingStatusAnswer(message.getChatId());
         };
     }
 
@@ -60,7 +76,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public SendMessage doCurrentStatusAnswer(Long chatId) {
+    public SendMessage doTrackingStatusAnswer(Long chatId) {
         if (userService.isExistByChatId(chatId)) {
             User currentUser = userService.getUserByChatId(chatId);
             return buildMessage(chatId, getTextAccordingToStatus(userService.getUserSubscriptionStatus(currentUser)));
@@ -77,6 +93,14 @@ public class AnswerServiceImpl implements AnswerService {
     public SendMessage getWrongCommandMessage(Long chatId) {
         return buildMessage(chatId,
                 EmojiParser.parseToUnicode(":warning: Not allowed command. Please try again with one from list."));
+    }
+
+    @Override
+    public SendMessage getServerNotAllowedMessage(Long chatId, Exception exception) {
+        userService.setUserSubscriptionStatus(userService.getUserByChatId(chatId), false);
+        return buildMessage(chatId,
+                EmojiParser.parseToUnicode(":zap::zap::zap:Can not connect to server!:zap::zap::zap:\n\n"
+                        + exception.getLocalizedMessage()));
     }
 
     private SendMessage buildMessage(Long chatId, String text) {

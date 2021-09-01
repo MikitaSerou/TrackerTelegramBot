@@ -8,6 +8,9 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -24,8 +27,12 @@ public class RestTemplateService implements RestService {
     }
 
     @Override
-    public ResponseEntity<String> doGetRequestByURL(String url) {
-        return restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+    public ResponseEntity<String> doGetRequestByURL(String url) throws ResourceAccessException {
+        try {
+            return restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+        } catch (HttpClientErrorException | HttpServerErrorException httpException) {
+            return ResponseEntity.status(httpException.getRawStatusCode()).body(httpException.getResponseBodyAsString());
+        }
     }
 
     @Override

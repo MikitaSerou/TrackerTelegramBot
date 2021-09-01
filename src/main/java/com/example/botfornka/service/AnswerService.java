@@ -1,14 +1,11 @@
 package com.example.botfornka.service;
 
-import com.example.botfornka.enums.Command;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public interface AnswerService {
 
-    SendMessage GetMessageAndDoAnswerByReceivedText(Message message);
-
-    SendMessage chooseAnswerByCommand(Message message, Command command);
+    SendMessage getMessageAndDoAnswer(Message message);
 
     SendMessage doStartTrackingAnswer(Message message);
 
@@ -16,8 +13,12 @@ public interface AnswerService {
 
     SendMessage doPingAnswer(Long chatId);
 
-    SendMessage doCurrentStatusAnswer(Long chatId);
+    SendMessage doTrackingStatusAnswer(Long chatId);
 
     SendMessage getWrongCommandMessage(Long chatId);
+
+    SendMessage getServerNotAllowedMessage(Long chatId, Exception exception);
+
+    SendMessage doUnknownErrorAnswer(Long chatId);
 }
 
