@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
@@ -24,6 +25,18 @@ public class AnswerServiceImpl implements AnswerService {
         this.restService = restService;
     }
 
+
+    public SendMessage doMailingFromBot(Update update) {
+        return doMailingAnswer(update.getMessage());
+    }
+
+    public SendMessage doAnswerForUser(Update update) {
+        SendMessage sendMessage = getMessageAndDoAnswer(update.getMessage());
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
+        return sendMessage;
+    }
+
+    @Override
     public SendMessage getMessageAndDoAnswer(Message message) {
         try {
             return chooseAnswerByCommand(message, Command.getByText(message.getText()));
@@ -34,7 +47,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     private SendMessage getHandledExceptionAnswer(Exception exception, Message message) {
         if (IllegalArgumentException.class.equals(exception.getClass())) {
-            return getWrongCommandMessage(message.getChatId());
+            return doWrongCommandAnswer(message.getChatId());
         } else if (ResourceAccessException.class.equals(exception.getClass())) {
             return getServerNotAllowedMessage(message.getChatId(), exception);
         } else {
@@ -54,6 +67,14 @@ public class AnswerServiceImpl implements AnswerService {
             case STOP -> doStopTrackingAnswer(message.getChatId());
             case PING -> doPingAnswer(message.getChatId());
             case STATUS -> doTrackingStatusAnswer(message.getChatId());
+        };
+    }
+
+    public SendMessage doMailingAnswer(Message message) {
+        return switch (message.getText()) {
+            case "restore" -> getRestoredMailingMessage(message.getChatId());
+            case "lost" -> getLostMailingMessage(message.getChatId());
+            default -> buildMessage(message.getChatId(), "Have a good day)");
         };
     }
 
@@ -90,17 +111,28 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public SendMessage getWrongCommandMessage(Long chatId) {
+    public SendMessage doWrongCommandAnswer(Long chatId) {
         return buildMessage(chatId,
                 EmojiParser.parseToUnicode(":warning: Not allowed command. Please try again with one from list."));
     }
 
     @Override
     public SendMessage getServerNotAllowedMessage(Long chatId, Exception exception) {
-        userService.setUserSubscriptionStatus(userService.getUserByChatId(chatId), false);
         return buildMessage(chatId,
                 EmojiParser.parseToUnicode(":zap::zap::zap:Can not connect to server!:zap::zap::zap:\n\n"
                         + exception.getLocalizedMessage()));
+    }
+
+    @Override
+    public SendMessage getRestoredMailingMessage(Long chatId) {
+        return buildMessage(chatId,
+                EmojiParser.parseToUnicode(":sparkle:SERVER CONNECTION RESTORED:sparkle:"));
+    }
+
+    @Override
+    public SendMessage getLostMailingMessage(Long chatId) {
+        return buildMessage(chatId,
+                EmojiParser.parseToUnicode(":exclamation:LOST SERVER CONNECTION:exclamation:"));
     }
 
     private SendMessage buildMessage(Long chatId, String text) {

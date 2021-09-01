@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public class RowsFormatter {
 
-
     public static String getResponseSummary(ResponseEntity<String> response) {
         return "STATUS: " + generateStatusRow(response.getStatusCode()) + "\n" +
                 "\nHEADERS:\n" + response.getHeaders() +
