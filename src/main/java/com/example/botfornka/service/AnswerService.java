@@ -15,10 +15,16 @@ public interface AnswerService {
 
     SendMessage doTrackingStatusAnswer(Long chatId);
 
-    SendMessage getWrongCommandMessage(Long chatId);
+    SendMessage doWrongCommandAnswer(Long chatId);
 
     SendMessage getServerNotAllowedMessage(Long chatId, Exception exception);
 
     SendMessage doUnknownErrorAnswer(Long chatId);
+
+    SendMessage getRestoredMailingMessage(Long chatId);
+
+    SendMessage getLostMailingMessage(Long chatId);
+
+    SendMessage doMailingAnswer(Message message);
 }
 

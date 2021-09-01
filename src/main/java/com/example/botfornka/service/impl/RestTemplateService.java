@@ -27,7 +27,7 @@ public class RestTemplateService implements RestService {
     }
 
     @Override
-    public ResponseEntity<String> doGetRequestByURL(String url) throws ResourceAccessException {
+    public ResponseEntity<String> doGetRequestByURL(String url) throws ResourceAccessException, HttpServerErrorException {
         try {
             return restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         } catch (HttpClientErrorException | HttpServerErrorException httpException) {

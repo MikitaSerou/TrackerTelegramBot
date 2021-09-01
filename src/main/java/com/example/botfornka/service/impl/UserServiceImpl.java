@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -60,5 +62,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean getUserSubscriptionStatus(User user) {
         return userRepository.getUserStatus(user.getChatId());
+    }
+
+    @Override
+    public List<User> findAllByStatus(Boolean status) {
+        return userRepository.findAllByIsActive(status);
     }
 }
