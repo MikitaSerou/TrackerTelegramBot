@@ -117,7 +117,7 @@ public class AnswerServiceImpl implements AnswerService {
     public SendMessage getServerNotAllowedMessage(Long chatId, Exception exception) {
         return buildMessage(chatId,
                 EmojiParser.parseToUnicode(":zap::zap::zap:Can not connect to server!:zap::zap::zap:\n" +
-                        restService.getTRACKED_DEFAULT_URL() + "\n\n"
+                        "URL: " + restService.getTRACKED_DEFAULT_URL() + "\n\n"
                         + exception.getLocalizedMessage()));
     }
 
