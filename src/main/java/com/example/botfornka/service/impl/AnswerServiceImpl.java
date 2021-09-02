@@ -25,11 +25,6 @@ public class AnswerServiceImpl implements AnswerService {
         this.restService = restService;
     }
 
-
-    public SendMessage doMailingFromBot(Update update) {
-        return doMailingAnswer(update.getMessage());
-    }
-
     public SendMessage doAnswerForUser(Update update) {
         SendMessage sendMessage = getMessageAndDoAnswer(update.getMessage());
         sendMessage.setChatId(update.getMessage().getChatId().toString());
@@ -82,7 +77,8 @@ public class AnswerServiceImpl implements AnswerService {
     public SendMessage doStartTrackingAnswer(Message message) {
         userService.startUserSubscription(message);
         return buildMessage(message.getChatId(),
-                EmojiParser.parseToUnicode(":bulb: You started tracking server state"));
+                EmojiParser.parseToUnicode(":bulb: You started tracking server state by URL:\n" +
+                        restService.getTRACKED_DEFAULT_URL()));
     }
 
     @Override
@@ -106,7 +102,8 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private String getTextAccordingToStatus(Boolean status) {
-        return status ? EmojiParser.parseToUnicode(":green_book: You are tracking current server statement")
+        return status ? EmojiParser.parseToUnicode(":green_book: You are tracking current server statement by URL:\n" +
+                restService.getTRACKED_DEFAULT_URL())
                 : EmojiParser.parseToUnicode(":closed_book: You are not tracking current server statement");
     }
 
@@ -119,7 +116,8 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public SendMessage getServerNotAllowedMessage(Long chatId, Exception exception) {
         return buildMessage(chatId,
-                EmojiParser.parseToUnicode(":zap::zap::zap:Can not connect to server!:zap::zap::zap:\n\n"
+                EmojiParser.parseToUnicode(":zap::zap::zap:Can not connect to server!:zap::zap::zap:\n" +
+                        "URL: " + restService.getTRACKED_DEFAULT_URL() + "\n\n"
                         + exception.getLocalizedMessage()));
     }
 

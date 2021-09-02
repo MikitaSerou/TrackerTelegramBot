@@ -2,6 +2,7 @@ package com.example.botfornka.service.impl;
 
 import com.example.botfornka.Bot;
 import com.example.botfornka.model.User;
+import com.example.botfornka.service.MailingService;
 import com.example.botfornka.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,18 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class MailingService {
+public class MailingServiceImpl implements MailingService {
 
     private final UserService userService;
     private final Bot bot;
 
     @Autowired
-    public MailingService(UserService userService, Bot bot) {
+    public MailingServiceImpl(UserService userService, Bot bot) {
         this.userService = userService;
         this.bot = bot;
     }
 
+    @Override
     public void sendRestoredConnectionMailing() {
         log.info("---------Start mailing restored connection message---------");
         List<User> activeUsers = userService.findAllByStatus(true);
@@ -34,6 +36,7 @@ public class MailingService {
         }
     }
 
+    @Override
     public void sendLostConnectingMailing() {
         log.info("---------Start mailing lost connection message---------");
         List<User> activeUsers = userService.findAllByStatus(true);
