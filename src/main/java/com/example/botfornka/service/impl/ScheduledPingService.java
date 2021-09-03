@@ -33,7 +33,7 @@ public class ScheduledPingService {
     public void trackCurrentServerState() {
         try {
             throwExceptionIfServerError(restServiceImpl.doGetRequestByURL(URL));
-            notifyAboutRestored();
+            notifyIfConnectionRestored();
         } catch (ResourceAccessException | HttpServerErrorException exception) {
             log.error("CAN NOT GET RESPONSE FROM " + URL);
             notifyAboutLostConnection();
@@ -45,7 +45,7 @@ public class ScheduledPingService {
             throw new HttpServerErrorException(response.getStatusCode());
     }
 
-    private void notifyAboutRestored() {
+    private void notifyIfConnectionRestored() {
         if (!isActiveTask) {
             isActiveTask = true;
             log.info("-----------Connection restored-----------");
