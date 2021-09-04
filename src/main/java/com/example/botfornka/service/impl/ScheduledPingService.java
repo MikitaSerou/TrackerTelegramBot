@@ -29,7 +29,7 @@ public class ScheduledPingService {
         this.mailingService = mailingService;
     }
 
-    @Scheduled(fixedRateString = "${fixedRate.tracking.milliseconds}")
+    @Scheduled(fixedRateString = "${ping.time}")
     public void trackCurrentServerState() {
         try {
             throwExceptionIfServerError(restServiceImpl.doGetRequestByURL(URL));
